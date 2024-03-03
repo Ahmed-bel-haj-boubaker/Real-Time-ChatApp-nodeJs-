@@ -50,6 +50,7 @@ module.exports.login = async (req, res, next) => {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const PasswordChecker = bcrypt.compare(hashedPassword, user.password);
+
     if (!PasswordChecker) {
       return res.json({ status: false, message: "incorrect password" });
     }
@@ -59,5 +60,24 @@ module.exports.login = async (req, res, next) => {
       .json({ status: true, message: "login successful", data: user });
   } catch (error) {
     console.log(error);
+    next(error)
   }
 };
+
+
+module.exports.setAvatar = async (req, res, next) =>{
+   
+    try {
+        const userId = req.params.id;
+        const avatarImage = req.body.image;
+        const userdata = await User.findByIdAndUpdate(userId,{
+            isAvatarImageSet:true,
+            avatarImage
+        });
+        return res.json({isSet:userdata.isAvatarImageSet,image:userdata.avatarImage})
+        
+    } catch (error) {
+        next(error)
+    }
+
+}
